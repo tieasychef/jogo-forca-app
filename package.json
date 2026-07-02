@@ -23,8 +23,12 @@
     "prettier": "^3.4.2"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
+    "backend/**/*.{ts,js}": [
+      "eslint --fix --config backend/eslint.config.js",
+      "prettier --write"
+    ],
+    "frontend/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix --config frontend/eslint.config.js",
       "prettier --write"
     ],
     "*.{json,md,yml,yaml,css}": [
