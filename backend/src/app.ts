@@ -1,5 +1,7 @@
 import express, { type Application } from 'express';
 import cors from 'cors';
+import { apiRouter } from './routes';
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 
 export function createApp(): Application {
   const app = express();
@@ -10,6 +12,11 @@ export function createApp(): Application {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
+
+  app.use('/api', apiRouter);
+
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 }
