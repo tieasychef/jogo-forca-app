@@ -1,10 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Gamepad2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useCriarUsuario } from '../hooks/useCriarUsuario';
+import { ThemeToggle } from '../components/layout/ThemeToggle';
 
 const homeSchema = z.object({
   nome: z.string().trim().min(2, 'Digite ao menos 2 caracteres').max(60, 'Nome muito longo'),
@@ -25,14 +27,34 @@ export function HomePage() {
   });
 
   async function onSubmit(data: HomeFormData) {
-    const usuario = await criarUsuario.mutateAsync({ nome: data.nome });
-    localStorage.setItem('jogoForca.usuarioId', usuario.id);
-    localStorage.setItem('jogoForca.nome', usuario.nome);
-    navigate('/jogo');
+    try {
+      const usuario = await criarUsuario.mutateAsync({ nome: data.nome });
+      localStorage.setItem('jogoForca.usuarioId', usuario.id);
+      localStorage.setItem('jogoForca.nome', usuario.nome);
+      navigate('/jogo');
+    } catch {
+      toast.error('Nao foi possivel iniciar o jogo. Tente novamente.');
+    }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
+    <main className="relative flex min-h-screen items-center justify-center px-4">
+      <div className="absolute right-4 top-4 flex items-center gap-2">
+        <NavLink
+          to="/ranking"
+          className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          Ranking
+        </NavLink>
+        <NavLink
+          to="/estatisticas"
+          className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          Estatisticas
+        </NavLink>
+        <ThemeToggle />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -64,11 +86,6 @@ export function HomePage() {
               {...register('nome')}
             />
             {errors.nome && <p className="mt-1.5 text-sm text-red-500">{errors.nome.message}</p>}
-            {criarUsuario.isError && (
-              <p className="mt-1.5 text-sm text-red-500">
-                Nao foi possivel iniciar o jogo. Tente novamente.
-              </p>
-            )}
           </div>
 
           <button
