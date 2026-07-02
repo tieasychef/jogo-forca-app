@@ -1,0 +1,13 @@
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "API REST do Jogo da Forca (Express + Prisma + Supabase/PostgreSQL)",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "echo \"backend ainda sera implementado na proxima etapa\" && exit 0",
+    "build": "echo \"backend ainda sera implementado na proxima etapa\" && exit 0",
+    "lint": "echo \"backend ainda sera implementado na proxima etapa\" && exit 0"
+  },
+  "license": "MIT"
+}

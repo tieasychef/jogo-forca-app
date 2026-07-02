@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+coverage
+.vercel
+backend/generated
+frontend/src/vite-env.d.ts
+pnpm-lock.yaml
+package-lock.json

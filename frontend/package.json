@@ -1,0 +1,12 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SPA do Jogo da Forca (React 19 + Vite + TypeScript)",
+  "scripts": {
+    "dev": "echo \"frontend ainda sera implementado na proxima etapa\" && exit 0",
+    "build": "echo \"frontend ainda sera implementado na proxima etapa\" && exit 0",
+    "lint": "echo \"frontend ainda sera implementado na proxima etapa\" && exit 0"
+  },
+  "license": "MIT"
+}
