@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { MAX_ERROS } from '@/types/jogo'
 
 interface ForcaSvgProps {
   erros: number
@@ -73,7 +74,7 @@ const partesDoBoneco = [
 ]
 
 export function ForcaSvg({ erros }: ForcaSvgProps) {
-  const derrota = erros >= 6
+  const derrota = erros >= MAX_ERROS
 
   return (
     <motion.svg

@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
 import { ForcaSvg } from '@/components/game/ForcaSvg'
 import { InfoBar } from '@/components/game/InfoBar'
 import { PalavraDisplay } from '@/components/game/PalavraDisplay'
 import { StatusPanel } from '@/components/game/StatusPanel'
+import { useGame } from '@/hooks/useGame'
+import { useKeyboard } from '@/hooks/useKeyboard'
 import type { Categoria, Dificuldade } from '@/types/palavra'
-import { sortearPalavra } from '@/utils/palavras'
-
-const MAX_ERROS = 6
 
 interface GamePageProps {
   categoria: Categoria
@@ -15,40 +13,17 @@ interface GamePageProps {
 }
 
 export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
-  const [chave, setChave] = useState(0)
-  const palavraAtual = useMemo(
-    () => sortearPalavra(categoria, dificuldade),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [categoria, dificuldade, chave],
-  )
-  const [letrasUsadas, setLetrasUsadas] = useState<Set<string>>(new Set())
+  const {
+    palavraAtual,
+    letrasCorretas,
+    letrasErradas,
+    erros,
+    estado,
+    usarLetra,
+    reiniciar,
+  } = useGame({ categoria, dificuldade })
 
-  const letrasCorretas = new Set(
-    [...letrasUsadas].filter((letra) => palavraAtual.palavra.includes(letra)),
-  )
-  const letrasErradas = [...letrasUsadas].filter(
-    (letra) => !palavraAtual.palavra.includes(letra),
-  )
-  const erros = letrasErradas.length
-  const venceu = palavraAtual.palavra.split('').every((letra) => letrasCorretas.has(letra))
-  const perdeu = erros >= MAX_ERROS
-
-  function reiniciar() {
-    setLetrasUsadas(new Set())
-    setChave((valor) => valor + 1)
-  }
-
-  useEffect(() => {
-    function aoPressionarTecla(evento: KeyboardEvent) {
-      const letra = evento.key.toUpperCase()
-      if (!/^[A-ZÀ-Ú]$/.test(letra)) return
-      if (perdeu || venceu) return
-      setLetrasUsadas((atual) => new Set(atual).add(letra))
-    }
-
-    window.addEventListener('keydown', aoPressionarTecla)
-    return () => window.removeEventListener('keydown', aoPressionarTecla)
-  }, [perdeu, venceu])
+  useKeyboard(usarLetra, estado === 'jogando')
 
   return (
     <div className="flex min-h-screen flex-col items-center gap-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-8 text-slate-100">
@@ -77,12 +52,14 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
 
       <StatusPanel letrasErradas={letrasErradas} erros={erros} pontuacao={0} />
 
-      {perdeu && (
+      {estado === 'perdeu' && (
         <p className="text-lg font-bold text-red-400">
           Fim de jogo! A palavra era {palavraAtual.palavra}
         </p>
       )}
-      {venceu && <p className="text-lg font-bold text-emerald-400">Você venceu! 🎉</p>}
+      {estado === 'venceu' && (
+        <p className="text-lg font-bold text-emerald-400">Você venceu! 🎉</p>
+      )}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-const MAX_ERROS = 6
+import { MAX_ERROS } from '@/types/jogo'
 
 interface StatusPanelProps {
   letrasErradas: string[]
