@@ -18,7 +18,11 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: npm ci
         env:
           DATABASE_URL: 'postgresql://user:password@localhost:5432/db'
           DIRECT_URL: 'postgresql://user:password@localhost:5432/db'
