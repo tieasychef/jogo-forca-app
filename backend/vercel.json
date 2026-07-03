@@ -1,0 +1,5 @@
+{
+  "installCommand": "npm install",
+  "buildCommand": "echo 'sem build estatico - funcoes em api/ sao empacotadas automaticamente'",
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}
