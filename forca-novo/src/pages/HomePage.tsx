@@ -12,6 +12,7 @@ import { useRanking } from '@/hooks/useRanking'
 import { useSom } from '@/hooks/useSom'
 import { useTheme } from '@/hooks/useTheme'
 import { OPCOES_DIFICULDADE } from '@/types/dificuldade'
+import { OPCOES_MODO, type ModoJogo } from '@/types/modo'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 import { listarCategorias } from '@/utils/palavras'
 import { ICONES_CATEGORIA } from '@/utils/categoriaIcones'
@@ -19,7 +20,7 @@ import { ICONES_CATEGORIA } from '@/utils/categoriaIcones'
 const CATEGORIAS = listarCategorias()
 
 interface HomePageProps {
-  onIniciar: (categoria: Categoria, dificuldade: Dificuldade) => void
+  onIniciar: (categoria: Categoria, dificuldade: Dificuldade, modo: ModoJogo) => void
 }
 
 const containerVariants = {
@@ -37,6 +38,7 @@ const itemVariants = {
 export function HomePage({ onIniciar }: HomePageProps) {
   const [categoria, setCategoria] = useState<Categoria>(CATEGORIAS[0])
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [modo, setModo] = useState<ModoJogo>('classico')
   const [mostrarEstatisticas, setMostrarEstatisticas] = useState(false)
   const [mostrarRanking, setMostrarRanking] = useState(false)
   const { somAtivo, alternarSom, reproduzir } = useSom()
@@ -52,6 +54,11 @@ export function HomePage({ onIniciar }: HomePageProps) {
   function selecionarDificuldade(valor: Dificuldade) {
     reproduzir('clique')
     setDificuldade(valor)
+  }
+
+  function selecionarModo(valor: ModoJogo) {
+    reproduzir('clique')
+    setModo(valor)
   }
 
   return (
@@ -140,11 +147,30 @@ export function HomePage({ onIniciar }: HomePageProps) {
           </div>
         </motion.div>
 
+        <motion.div variants={itemVariants}>
+          <h2 className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            Modo de jogo
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {OPCOES_MODO.map((opcao) => (
+              <motion.div key={opcao.valor} variants={itemVariants}>
+                <SelectableCard
+                  label={opcao.label}
+                  description={opcao.descricao}
+                  icon={opcao.icone}
+                  selected={modo === opcao.valor}
+                  onClick={() => selecionarModo(opcao.valor)}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
         <motion.div variants={itemVariants} className="flex justify-center pt-2">
           <PlayButton
             onClick={() => {
               reproduzir('clique')
-              onIniciar(categoria, dificuldade)
+              onIniciar(categoria, dificuldade, modo)
             }}
           />
         </motion.div>

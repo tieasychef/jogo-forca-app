@@ -2,27 +2,31 @@ import { useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ForcaSvg } from '@/components/game/ForcaSvg'
 import { InfoBar } from '@/components/game/InfoBar'
+import { ModoBadge } from '@/components/game/ModoBadge'
 import { PalavraDisplay } from '@/components/game/PalavraDisplay'
 import { ResultModal } from '@/components/game/ResultModal'
 import { StatusPanel } from '@/components/game/StatusPanel'
 import { Teclado } from '@/components/game/Teclado'
 import { SomToggle } from '@/components/ui/SomToggle'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { useCountdown } from '@/hooks/useCountdown'
 import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useGame } from '@/hooks/useGame'
 import { useKeyboard } from '@/hooks/useKeyboard'
 import { useRanking } from '@/hooks/useRanking'
 import { useSom } from '@/hooks/useSom'
 import { useTheme } from '@/hooks/useTheme'
+import { TEMPO_LIMITE_SEGUNDOS, type ModoJogo } from '@/types/modo'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 
 interface GamePageProps {
   categoria: Categoria
   dificuldade: Dificuldade
+  modo: ModoJogo
   onVoltar: () => void
 }
 
-export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
+export function GamePage({ categoria, dificuldade, modo, onVoltar }: GamePageProps) {
   const { somAtivo, alternarSom, reproduzir } = useSom()
   const { tema, alternarTema } = useTheme()
   const { estatisticas, registrarPartida } = useEstatisticas()
@@ -36,11 +40,14 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
     estado,
     pontuacao,
     combo,
+    rodada,
     usarLetra,
+    forcarDerrota,
     reiniciar,
   } = useGame({
     categoria,
     dificuldade,
+    modo,
     aoAcertarLetra: () => reproduzir('acerto'),
     aoErrarLetra: () => reproduzir('erro'),
     aoVencer: () => reproduzir('vitoria'),
@@ -49,8 +56,16 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
 
   useKeyboard(usarLetra, estado === 'jogando')
 
+  const segundosRestantes = useCountdown({
+    duracaoSegundos: TEMPO_LIMITE_SEGUNDOS,
+    ativo: modo === 'tempo' && estado === 'jogando',
+    chaveReset: rodada,
+    aoZerar: forcarDerrota,
+  })
+
   useEffect(() => {
-    if (estado === 'venceu' || estado === 'perdeu') {
+    const vitoriaFinal = estado === 'venceu' && modo !== 'infinito'
+    if (vitoriaFinal || estado === 'perdeu') {
       registrarPartida({ venceu: estado === 'venceu', pontuacao, erros })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +100,13 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
         </div>
       </header>
 
-      <InfoBar categoria={palavraAtual.categoria} dica={palavraAtual.dica} />
+      <ModoBadge modo={modo} segundosRestantes={segundosRestantes} />
+
+      <InfoBar
+        categoria={palavraAtual.categoria}
+        dica={palavraAtual.dica}
+        mostrarDica={modo !== 'desafio'}
+      />
 
       <ForcaSvg erros={erros} />
 
@@ -107,7 +128,26 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
       />
 
       <AnimatePresence>
-        {(estado === 'venceu' || estado === 'perdeu') && (
+        {estado === 'perdeu' && (
+          <ResultModal
+            estado={estado}
+            palavra={palavraAtual.palavra}
+            pontuacao={pontuacao}
+            elegivelParaRanking={entraNoRanking(pontuacao)}
+            onVoltar={onVoltar}
+            onReiniciar={reiniciar}
+            onSalvarNoRanking={(nome) =>
+              adicionarEntrada({
+                nome,
+                pontuacao,
+                categoria: palavraAtual.categoria,
+                dificuldade,
+                data: new Date().toISOString(),
+              })
+            }
+          />
+        )}
+        {estado === 'venceu' && modo !== 'infinito' && (
           <ResultModal
             estado={estado}
             palavra={palavraAtual.palavra}

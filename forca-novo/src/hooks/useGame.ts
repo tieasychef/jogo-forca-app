@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 import { MAX_ERROS, type EstadoJogo } from '@/types/jogo'
+import type { ModoJogo } from '@/types/modo'
 import { sortearPalavra } from '@/utils/palavras'
 import { calcularGanhoPorAcerto, PONTOS_ERRO, PONTOS_VITORIA } from '@/utils/pontuacao'
+
+const ATRASO_PROXIMA_PALAVRA_MS = 1200
 
 interface UseGameParams {
   categoria: Categoria
   dificuldade: Dificuldade
+  modo?: ModoJogo
   aoAcertarLetra?: () => void
   aoErrarLetra?: () => void
   aoVencer?: () => void
@@ -41,6 +45,7 @@ function placarReducer(estado: Placar, acao: AcaoPlacar): Placar {
 export function useGame({
   categoria,
   dificuldade,
+  modo = 'classico',
   aoAcertarLetra,
   aoErrarLetra,
   aoVencer,
@@ -54,6 +59,7 @@ export function useGame({
   )
   const [letrasUsadas, setLetrasUsadas] = useState<Set<string>>(new Set())
   const [placar, despacharPlacar] = useReducer(placarReducer, PLACAR_INICIAL)
+  const [derrotaForcada, setDerrotaForcada] = useState(false)
   const fimDeJogoAplicado = useRef(false)
 
   const letrasCorretas = useMemo(
@@ -70,7 +76,7 @@ export function useGame({
   const venceu = palavraAtual.palavra
     .split('')
     .every((letra) => letrasCorretas.has(letra))
-  const perdeu = !venceu && erros >= MAX_ERROS
+  const perdeu = !venceu && (erros >= MAX_ERROS || derrotaForcada)
 
   const estado: EstadoJogo = venceu ? 'venceu' : perdeu ? 'perdeu' : 'jogando'
 
@@ -93,21 +99,35 @@ export function useGame({
     [estado, palavraAtual, aoAcertarLetra, aoErrarLetra],
   )
 
+  const forcarDerrota = useCallback(() => {
+    setDerrotaForcada(true)
+  }, [])
+
   useEffect(() => {
     if (venceu && !fimDeJogoAplicado.current) {
       fimDeJogoAplicado.current = true
       despacharPlacar({ tipo: 'vitoria' })
       aoVencer?.()
+
+      if (modo === 'infinito') {
+        const id = setTimeout(() => {
+          setLetrasUsadas(new Set())
+          setRodada((valor) => valor + 1)
+          fimDeJogoAplicado.current = false
+        }, ATRASO_PROXIMA_PALAVRA_MS)
+        return () => clearTimeout(id)
+      }
     } else if (perdeu && !fimDeJogoAplicado.current) {
       fimDeJogoAplicado.current = true
       aoPerder?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venceu, perdeu])
+  }, [venceu, perdeu, modo])
 
   const reiniciar = useCallback(() => {
     setLetrasUsadas(new Set())
     despacharPlacar({ tipo: 'reset' })
+    setDerrotaForcada(false)
     fimDeJogoAplicado.current = false
     setRodada((valor) => valor + 1)
   }, [])
@@ -122,7 +142,9 @@ export function useGame({
     estado,
     pontuacao: placar.pontuacao,
     combo: placar.combo,
+    rodada,
     usarLetra,
+    forcarDerrota,
     reiniciar,
   }
 }
