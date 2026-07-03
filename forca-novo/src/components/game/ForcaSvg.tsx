@@ -79,7 +79,7 @@ export function ForcaSvg({ erros }: ForcaSvgProps) {
   return (
     <motion.svg
       viewBox="0 0 260 220"
-      className={`h-56 w-64 sm:h-64 sm:w-72 ${derrota ? 'text-red-400' : 'text-slate-200'}`}
+      className={`h-56 w-64 sm:h-64 sm:w-72 ${derrota ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-200'}`}
       animate={derrota ? { x: [0, -4, 4, -4, 4, 0] } : {}}
       transition={{ duration: 0.4 }}
     >

@@ -52,24 +52,25 @@ export function ResultModal({
         initial={{ opacity: 0, scale: 0.85, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-        className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl border border-slate-700 bg-slate-900 p-8 text-center shadow-2xl"
+        className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-2xl dark:border-slate-700 dark:bg-slate-900"
       >
         <span className="text-5xl">{venceu ? '🎉' : '💀'}</span>
         <h2
-          className={`text-2xl font-extrabold ${venceu ? 'text-emerald-400' : 'text-red-400'}`}
+          className={`text-2xl font-extrabold ${venceu ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}
         >
           {venceu ? 'Você venceu!' : 'Fim de jogo'}
         </h2>
-        <p className="text-slate-300">
-          A palavra era <strong className="text-slate-100">{palavra}</strong>
+        <p className="text-slate-600 dark:text-slate-300">
+          A palavra era{' '}
+          <strong className="text-slate-900 dark:text-slate-100">{palavra}</strong>
         </p>
-        <p className="text-lg font-semibold text-slate-100">
-          Pontuação final: <span className="text-fuchsia-400">{pontuacao}</span>
+        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          Pontuação final: <span className="text-fuchsia-500 dark:text-fuchsia-400">{pontuacao}</span>
         </p>
 
         {elegivelParaRanking && !salvo && (
           <div className="flex w-full flex-col gap-2">
-            <p className="text-sm font-semibold text-amber-300">
+            <p className="text-sm font-semibold text-amber-600 dark:text-amber-300">
               Sua pontuação entrou no Top 10! 🏆
             </p>
             <div className="flex gap-2">
@@ -79,7 +80,7 @@ export function ResultModal({
                 onChange={(evento) => setNome(evento.target.value)}
                 maxLength={20}
                 placeholder="Seu nome"
-                className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 outline-none focus:border-fuchsia-400"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-fuchsia-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
               <button
                 type="button"
@@ -92,14 +93,16 @@ export function ResultModal({
           </div>
         )}
         {elegivelParaRanking && salvo && (
-          <p className="text-sm text-emerald-400">Pontuação salva no ranking!</p>
+          <p className="text-sm text-emerald-600 dark:text-emerald-400">
+            Pontuação salva no ranking!
+          </p>
         )}
 
         <div className="mt-2 flex gap-3">
           <button
             type="button"
             onClick={onVoltar}
-            className="rounded-full border border-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-slate-400"
+            className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-400"
           >
             Início
           </button>

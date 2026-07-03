@@ -30,7 +30,7 @@ export function Teclado({
             whileTap={usada ? undefined : { scale: 0.85 }}
             className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold transition-colors sm:h-10 sm:w-10 ${
               !usada
-                ? 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                ? 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
                 : correta
                   ? 'bg-emerald-500/80 text-white'
                   : 'bg-red-500/60 text-white/70'

@@ -4,11 +4,13 @@ import { Logo } from '@/components/home/Logo'
 import { SelectableCard } from '@/components/home/SelectableCard'
 import { PlayButton } from '@/components/home/PlayButton'
 import { SomToggle } from '@/components/ui/SomToggle'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { EstatisticasModal } from '@/components/stats/EstatisticasModal'
 import { RankingModal } from '@/components/ranking/RankingModal'
 import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useRanking } from '@/hooks/useRanking'
 import { useSom } from '@/hooks/useSom'
+import { useTheme } from '@/hooks/useTheme'
 import { OPCOES_DIFICULDADE } from '@/types/dificuldade'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 import { listarCategorias } from '@/utils/palavras'
@@ -38,6 +40,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
   const [mostrarEstatisticas, setMostrarEstatisticas] = useState(false)
   const [mostrarRanking, setMostrarRanking] = useState(false)
   const { somAtivo, alternarSom, reproduzir } = useSom()
+  const { tema, alternarTema } = useTheme()
   const { estatisticas, taxaVitoria } = useEstatisticas()
   const { ranking } = useRanking()
 
@@ -52,7 +55,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center gap-10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-10 text-slate-100">
+    <div className="relative flex min-h-screen flex-col items-center justify-center gap-10 bg-gradient-to-b from-slate-100 via-white to-slate-100 px-4 py-10 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100">
       <div className="absolute right-4 top-4 flex items-center gap-2">
         <button
           type="button"
@@ -60,7 +63,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
             reproduzir('clique')
             setMostrarEstatisticas(true)
           }}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-lg text-slate-300 transition-colors hover:border-slate-500"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-lg text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
           aria-label="Ver estatísticas"
         >
           📊
@@ -71,11 +74,12 @@ export function HomePage({ onIniciar }: HomePageProps) {
             reproduzir('clique')
             setMostrarRanking(true)
           }}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-lg text-slate-300 transition-colors hover:border-slate-500"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-lg text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
           aria-label="Ver ranking"
         >
           🏆
         </button>
+        <ThemeToggle tema={tema} onToggle={alternarTema} />
         <SomToggle ativo={somAtivo} onToggle={alternarSom} />
       </div>
 
@@ -101,7 +105,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
         className="w-full max-w-2xl space-y-8"
       >
         <motion.div variants={itemVariants}>
-          <h2 className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-slate-400">
+          <h2 className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
             Categoria
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -119,7 +123,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <h2 className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-slate-400">
+          <h2 className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
             Dificuldade
           </h2>
           <div className="grid grid-cols-3 gap-3">

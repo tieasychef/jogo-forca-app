@@ -12,7 +12,7 @@ export function Logo() {
       <h1 className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl">
         Jogo da Forca
       </h1>
-      <p className="text-sm text-slate-400 sm:text-base">
+      <p className="text-sm text-slate-500 dark:text-slate-400 sm:text-base">
         Descubra a palavra antes que seja tarde demais
       </p>
     </motion.div>

@@ -17,15 +17,16 @@ export function StatusPanel({
   melhorPontuacao,
 }: StatusPanelProps) {
   return (
-    <div className="flex w-full max-w-md flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-300">
+    <div className="flex w-full max-w-md flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600 dark:text-slate-300">
       <span>
-        Tentativas restantes: <strong className="text-slate-100">{MAX_ERROS - erros}</strong>
+        Tentativas restantes:{' '}
+        <strong className="text-slate-900 dark:text-slate-100">{MAX_ERROS - erros}</strong>
       </span>
       <span>
-        Pontuação: <strong className="text-emerald-400">{pontuacao}</strong>
+        Pontuação: <strong className="text-emerald-600 dark:text-emerald-400">{pontuacao}</strong>
       </span>
       <span>
-        Melhor: <strong className="text-slate-100">{melhorPontuacao}</strong>
+        Melhor: <strong className="text-slate-900 dark:text-slate-100">{melhorPontuacao}</strong>
       </span>
       <AnimatePresence>
         {combo >= 2 && (
@@ -43,7 +44,7 @@ export function StatusPanel({
       <span className="flex items-center gap-1">
         Erradas:
         {letrasErradas.length === 0 ? (
-          <span className="text-slate-500">—</span>
+          <span className="text-slate-400 dark:text-slate-500">—</span>
         ) : (
           letrasErradas.map((letra) => (
             <span
