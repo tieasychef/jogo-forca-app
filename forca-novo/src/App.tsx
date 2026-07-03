@@ -1,8 +1,36 @@
+import { useState } from 'react'
+import { HomePage } from '@/pages/HomePage'
+import type { Categoria, Dificuldade } from '@/types/palavra'
+
+interface PartidaConfig {
+  categoria: Categoria
+  dificuldade: Dificuldade
+}
+
 function App() {
+  const [partida, setPartida] = useState<PartidaConfig | null>(null)
+
+  if (!partida) {
+    return (
+      <HomePage
+        onIniciar={(categoria, dificuldade) => setPartida({ categoria, dificuldade })}
+      />
+    )
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 text-slate-100">
-      <h1 className="text-4xl font-bold tracking-tight">Jogo da Forca</h1>
-      <p className="mt-2 text-slate-400">Projeto em construção…</p>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 text-slate-100">
+      <p>
+        Categoria: <strong>{partida.categoria}</strong> · Dificuldade:{' '}
+        <strong>{partida.dificuldade}</strong>
+      </p>
+      <button
+        type="button"
+        className="rounded-full border border-slate-600 px-4 py-2 text-sm hover:border-slate-400"
+        onClick={() => setPartida(null)}
+      >
+        Voltar
+      </button>
     </div>
   )
 }
