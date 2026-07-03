@@ -3,7 +3,6 @@ import type { Categoria, Dificuldade } from '@/types/palavra'
 import { MAX_ERROS, type EstadoJogo } from '@/types/jogo'
 import { sortearPalavra } from '@/utils/palavras'
 import { calcularGanhoPorAcerto, PONTOS_ERRO, PONTOS_VITORIA } from '@/utils/pontuacao'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
 
 interface UseGameParams {
   categoria: Categoria
@@ -55,7 +54,6 @@ export function useGame({
   )
   const [letrasUsadas, setLetrasUsadas] = useState<Set<string>>(new Set())
   const [placar, despacharPlacar] = useReducer(placarReducer, PLACAR_INICIAL)
-  const [melhorPontuacao, setMelhorPontuacao] = useLocalStorage('forca:melhor-pontuacao', 0)
   const fimDeJogoAplicado = useRef(false)
 
   const letrasCorretas = useMemo(
@@ -107,12 +105,6 @@ export function useGame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venceu, perdeu])
 
-  useEffect(() => {
-    if (placar.pontuacao > melhorPontuacao) {
-      setMelhorPontuacao(placar.pontuacao)
-    }
-  }, [placar.pontuacao, melhorPontuacao, setMelhorPontuacao])
-
   const reiniciar = useCallback(() => {
     setLetrasUsadas(new Set())
     despacharPlacar({ tipo: 'reset' })
@@ -130,7 +122,6 @@ export function useGame({
     estado,
     pontuacao: placar.pontuacao,
     combo: placar.combo,
-    melhorPontuacao,
     usarLetra,
     reiniciar,
   }

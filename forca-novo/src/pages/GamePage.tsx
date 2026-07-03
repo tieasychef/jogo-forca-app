@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ForcaSvg } from '@/components/game/ForcaSvg'
 import { InfoBar } from '@/components/game/InfoBar'
@@ -6,6 +7,7 @@ import { ResultModal } from '@/components/game/ResultModal'
 import { StatusPanel } from '@/components/game/StatusPanel'
 import { Teclado } from '@/components/game/Teclado'
 import { SomToggle } from '@/components/ui/SomToggle'
+import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useGame } from '@/hooks/useGame'
 import { useKeyboard } from '@/hooks/useKeyboard'
 import { useSom } from '@/hooks/useSom'
@@ -19,6 +21,7 @@ interface GamePageProps {
 
 export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
   const { somAtivo, alternarSom, reproduzir } = useSom()
+  const { estatisticas, registrarPartida } = useEstatisticas()
   const {
     palavraAtual,
     letrasUsadas,
@@ -28,7 +31,6 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
     estado,
     pontuacao,
     combo,
-    melhorPontuacao,
     usarLetra,
     reiniciar,
   } = useGame({
@@ -41,6 +43,13 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
   })
 
   useKeyboard(usarLetra, estado === 'jogando')
+
+  useEffect(() => {
+    if (estado === 'venceu' || estado === 'perdeu') {
+      registrarPartida({ venceu: estado === 'venceu', pontuacao, erros })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estado])
 
   return (
     <div className="flex min-h-screen flex-col items-center gap-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-8 text-slate-100">
@@ -81,7 +90,7 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
         erros={erros}
         pontuacao={pontuacao}
         combo={combo}
-        melhorPontuacao={melhorPontuacao}
+        melhorPontuacao={estatisticas.melhorPontuacao}
       />
 
       <Teclado

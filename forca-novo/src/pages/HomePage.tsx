@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Logo } from '@/components/home/Logo'
 import { SelectableCard } from '@/components/home/SelectableCard'
 import { PlayButton } from '@/components/home/PlayButton'
 import { SomToggle } from '@/components/ui/SomToggle'
+import { EstatisticasModal } from '@/components/stats/EstatisticasModal'
+import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useSom } from '@/hooks/useSom'
 import { OPCOES_DIFICULDADE } from '@/types/dificuldade'
 import type { Categoria, Dificuldade } from '@/types/palavra'
@@ -31,7 +33,9 @@ const itemVariants = {
 export function HomePage({ onIniciar }: HomePageProps) {
   const [categoria, setCategoria] = useState<Categoria>(CATEGORIAS[0])
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const [mostrarEstatisticas, setMostrarEstatisticas] = useState(false)
   const { somAtivo, alternarSom, reproduzir } = useSom()
+  const { estatisticas, taxaVitoria } = useEstatisticas()
 
   function selecionarCategoria(cat: Categoria) {
     reproduzir('clique')
@@ -45,9 +49,30 @@ export function HomePage({ onIniciar }: HomePageProps) {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center gap-10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-10 text-slate-100">
-      <div className="absolute right-4 top-4">
+      <div className="absolute right-4 top-4 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            reproduzir('clique')
+            setMostrarEstatisticas(true)
+          }}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-lg text-slate-300 transition-colors hover:border-slate-500"
+          aria-label="Ver estatísticas"
+        >
+          📊
+        </button>
         <SomToggle ativo={somAtivo} onToggle={alternarSom} />
       </div>
+
+      <AnimatePresence>
+        {mostrarEstatisticas && (
+          <EstatisticasModal
+            estatisticas={estatisticas}
+            taxaVitoria={taxaVitoria}
+            onFechar={() => setMostrarEstatisticas(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <Logo />
 
