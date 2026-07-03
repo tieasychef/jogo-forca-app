@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
+import { ConquistaToast } from '@/components/conquistas/ConquistaToast'
 import { ForcaSvg } from '@/components/game/ForcaSvg'
 import { InfoBar } from '@/components/game/InfoBar'
 import { ModoBadge } from '@/components/game/ModoBadge'
@@ -9,6 +10,7 @@ import { StatusPanel } from '@/components/game/StatusPanel'
 import { Teclado } from '@/components/game/Teclado'
 import { SomToggle } from '@/components/ui/SomToggle'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { useConquistas } from '@/hooks/useConquistas'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useGame } from '@/hooks/useGame'
@@ -30,6 +32,7 @@ export function GamePage({ categoria, dificuldade, modo, onVoltar }: GamePagePro
   const { somAtivo, alternarSom, reproduzir } = useSom()
   const { tema, alternarTema } = useTheme()
   const { estatisticas, registrarPartida } = useEstatisticas()
+  const { notificacoes, dispensarNotificacao } = useConquistas(estatisticas)
   const { entraNoRanking, adicionarEntrada } = useRanking()
   const {
     palavraAtual,
@@ -66,7 +69,7 @@ export function GamePage({ categoria, dificuldade, modo, onVoltar }: GamePagePro
   useEffect(() => {
     const vitoriaFinal = estado === 'venceu' && modo !== 'infinito'
     if (vitoriaFinal || estado === 'perdeu') {
-      registrarPartida({ venceu: estado === 'venceu', pontuacao, erros })
+      registrarPartida({ venceu: estado === 'venceu', pontuacao, erros, modo })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado])
@@ -167,6 +170,18 @@ export function GamePage({ categoria, dificuldade, modo, onVoltar }: GamePagePro
           />
         )}
       </AnimatePresence>
+
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        <AnimatePresence>
+          {notificacoes.map((conquista) => (
+            <ConquistaToast
+              key={conquista.id}
+              conquista={conquista}
+              onFechar={() => dispensarNotificacao(conquista.id)}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

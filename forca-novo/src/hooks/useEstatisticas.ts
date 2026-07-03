@@ -1,11 +1,13 @@
 import { useCallback } from 'react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { ESTATISTICAS_INICIAIS, type Estatisticas } from '@/types/estatisticas'
+import type { ModoJogo } from '@/types/modo'
 
 interface RegistrarPartidaParams {
   venceu: boolean
   pontuacao: number
   erros: number
+  modo?: ModoJogo
 }
 
 export function useEstatisticas() {
@@ -15,7 +17,7 @@ export function useEstatisticas() {
   )
 
   const registrarPartida = useCallback(
-    ({ venceu, pontuacao, erros }: RegistrarPartidaParams) => {
+    ({ venceu, pontuacao, erros, modo }: RegistrarPartidaParams) => {
       setEstatisticas((atual) => {
         const sequenciaAtual = venceu ? atual.sequenciaAtual + 1 : 0
 
@@ -28,6 +30,8 @@ export function useEstatisticas() {
           melhorPontuacao: Math.max(atual.melhorPontuacao, pontuacao),
           totalPalavrasAcertadas: atual.totalPalavrasAcertadas + (venceu ? 1 : 0),
           partidasSemErro: atual.partidasSemErro + (venceu && erros === 0 ? 1 : 0),
+          venceuModoDesafio: atual.venceuModoDesafio || (venceu && modo === 'desafio'),
+          venceuModoTempo: atual.venceuModoTempo || (venceu && modo === 'tempo'),
         }
       })
     },

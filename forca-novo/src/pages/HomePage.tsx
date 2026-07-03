@@ -7,6 +7,8 @@ import { SomToggle } from '@/components/ui/SomToggle'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { EstatisticasModal } from '@/components/stats/EstatisticasModal'
 import { RankingModal } from '@/components/ranking/RankingModal'
+import { ConquistasModal } from '@/components/conquistas/ConquistasModal'
+import { useConquistas } from '@/hooks/useConquistas'
 import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useRanking } from '@/hooks/useRanking'
 import { useSom } from '@/hooks/useSom'
@@ -41,9 +43,11 @@ export function HomePage({ onIniciar }: HomePageProps) {
   const [modo, setModo] = useState<ModoJogo>('classico')
   const [mostrarEstatisticas, setMostrarEstatisticas] = useState(false)
   const [mostrarRanking, setMostrarRanking] = useState(false)
+  const [mostrarConquistas, setMostrarConquistas] = useState(false)
   const { somAtivo, alternarSom, reproduzir } = useSom()
   const { tema, alternarTema } = useTheme()
   const { estatisticas, taxaVitoria } = useEstatisticas()
+  const { desbloqueadas } = useConquistas(estatisticas)
   const { ranking } = useRanking()
 
   function selecionarCategoria(cat: Categoria) {
@@ -86,6 +90,17 @@ export function HomePage({ onIniciar }: HomePageProps) {
         >
           🏆
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            reproduzir('clique')
+            setMostrarConquistas(true)
+          }}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-lg text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500"
+          aria-label="Ver conquistas"
+        >
+          🎖️
+        </button>
         <ThemeToggle tema={tema} onToggle={alternarTema} />
         <SomToggle ativo={somAtivo} onToggle={alternarSom} />
       </div>
@@ -100,6 +115,12 @@ export function HomePage({ onIniciar }: HomePageProps) {
         )}
         {mostrarRanking && (
           <RankingModal ranking={ranking} onFechar={() => setMostrarRanking(false)} />
+        )}
+        {mostrarConquistas && (
+          <ConquistasModal
+            desbloqueadas={desbloqueadas}
+            onFechar={() => setMostrarConquistas(false)}
+          />
         )}
       </AnimatePresence>
 

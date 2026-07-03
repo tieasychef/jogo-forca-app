@@ -7,6 +7,8 @@ export interface Estatisticas {
   melhorPontuacao: number
   totalPalavrasAcertadas: number
   partidasSemErro: number
+  venceuModoDesafio: boolean
+  venceuModoTempo: boolean
 }
 
 export const ESTATISTICAS_INICIAIS: Estatisticas = {
@@ -18,4 +20,6 @@ export const ESTATISTICAS_INICIAIS: Estatisticas = {
   melhorPontuacao: 0,
   totalPalavrasAcertadas: 0,
   partidasSemErro: 0,
+  venceuModoDesafio: false,
+  venceuModoTempo: false,
 }
