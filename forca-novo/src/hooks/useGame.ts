@@ -8,6 +8,10 @@ import { useLocalStorage } from '@/hooks/useLocalStorage'
 interface UseGameParams {
   categoria: Categoria
   dificuldade: Dificuldade
+  aoAcertarLetra?: () => void
+  aoErrarLetra?: () => void
+  aoVencer?: () => void
+  aoPerder?: () => void
 }
 
 interface Placar {
@@ -35,7 +39,14 @@ function placarReducer(estado: Placar, acao: AcaoPlacar): Placar {
   }
 }
 
-export function useGame({ categoria, dificuldade }: UseGameParams) {
+export function useGame({
+  categoria,
+  dificuldade,
+  aoAcertarLetra,
+  aoErrarLetra,
+  aoVencer,
+  aoPerder,
+}: UseGameParams) {
   const [rodada, setRodada] = useState(0)
   const palavraAtual = useMemo(
     () => sortearPalavra(categoria, dificuldade),
@@ -45,7 +56,7 @@ export function useGame({ categoria, dificuldade }: UseGameParams) {
   const [letrasUsadas, setLetrasUsadas] = useState<Set<string>>(new Set())
   const [placar, despacharPlacar] = useReducer(placarReducer, PLACAR_INICIAL)
   const [melhorPontuacao, setMelhorPontuacao] = useLocalStorage('forca:melhor-pontuacao', 0)
-  const bonusVitoriaAplicado = useRef(false)
+  const fimDeJogoAplicado = useRef(false)
 
   const letrasCorretas = useMemo(
     () => new Set([...letrasUsadas].filter((letra) => palavraAtual.palavra.includes(letra))),
@@ -73,17 +84,28 @@ export function useGame({ categoria, dificuldade }: UseGameParams) {
         return new Set(atual).add(letra)
       })
 
-      despacharPlacar({ tipo: palavraAtual.palavra.includes(letra) ? 'acerto' : 'erro' })
+      if (palavraAtual.palavra.includes(letra)) {
+        despacharPlacar({ tipo: 'acerto' })
+        aoAcertarLetra?.()
+      } else {
+        despacharPlacar({ tipo: 'erro' })
+        aoErrarLetra?.()
+      }
     },
-    [estado, palavraAtual],
+    [estado, palavraAtual, aoAcertarLetra, aoErrarLetra],
   )
 
   useEffect(() => {
-    if (venceu && !bonusVitoriaAplicado.current) {
-      bonusVitoriaAplicado.current = true
+    if (venceu && !fimDeJogoAplicado.current) {
+      fimDeJogoAplicado.current = true
       despacharPlacar({ tipo: 'vitoria' })
+      aoVencer?.()
+    } else if (perdeu && !fimDeJogoAplicado.current) {
+      fimDeJogoAplicado.current = true
+      aoPerder?.()
     }
-  }, [venceu])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [venceu, perdeu])
 
   useEffect(() => {
     if (placar.pontuacao > melhorPontuacao) {
@@ -94,7 +116,7 @@ export function useGame({ categoria, dificuldade }: UseGameParams) {
   const reiniciar = useCallback(() => {
     setLetrasUsadas(new Set())
     despacharPlacar({ tipo: 'reset' })
-    bonusVitoriaAplicado.current = false
+    fimDeJogoAplicado.current = false
     setRodada((valor) => valor + 1)
   }, [])
 

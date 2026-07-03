@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import { Logo } from '@/components/home/Logo'
 import { SelectableCard } from '@/components/home/SelectableCard'
 import { PlayButton } from '@/components/home/PlayButton'
+import { SomToggle } from '@/components/ui/SomToggle'
+import { useSom } from '@/hooks/useSom'
 import { OPCOES_DIFICULDADE } from '@/types/dificuldade'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 import { listarCategorias } from '@/utils/palavras'
@@ -29,9 +31,24 @@ const itemVariants = {
 export function HomePage({ onIniciar }: HomePageProps) {
   const [categoria, setCategoria] = useState<Categoria>(CATEGORIAS[0])
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
+  const { somAtivo, alternarSom, reproduzir } = useSom()
+
+  function selecionarCategoria(cat: Categoria) {
+    reproduzir('clique')
+    setCategoria(cat)
+  }
+
+  function selecionarDificuldade(valor: Dificuldade) {
+    reproduzir('clique')
+    setDificuldade(valor)
+  }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-10 text-slate-100">
+    <div className="relative flex min-h-screen flex-col items-center justify-center gap-10 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-10 text-slate-100">
+      <div className="absolute right-4 top-4">
+        <SomToggle ativo={somAtivo} onToggle={alternarSom} />
+      </div>
+
       <Logo />
 
       <motion.section
@@ -51,7 +68,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
                   label={cat}
                   icon={ICONES_CATEGORIA[cat]}
                   selected={categoria === cat}
-                  onClick={() => setCategoria(cat)}
+                  onClick={() => selecionarCategoria(cat)}
                 />
               </motion.div>
             ))}
@@ -69,7 +86,7 @@ export function HomePage({ onIniciar }: HomePageProps) {
                   label={opcao.label}
                   description={opcao.descricao}
                   selected={dificuldade === opcao.valor}
-                  onClick={() => setDificuldade(opcao.valor)}
+                  onClick={() => selecionarDificuldade(opcao.valor)}
                 />
               </motion.div>
             ))}
@@ -77,7 +94,12 @@ export function HomePage({ onIniciar }: HomePageProps) {
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex justify-center pt-2">
-          <PlayButton onClick={() => onIniciar(categoria, dificuldade)} />
+          <PlayButton
+            onClick={() => {
+              reproduzir('clique')
+              onIniciar(categoria, dificuldade)
+            }}
+          />
         </motion.div>
       </motion.section>
     </div>

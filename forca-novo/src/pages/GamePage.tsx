@@ -3,8 +3,10 @@ import { InfoBar } from '@/components/game/InfoBar'
 import { PalavraDisplay } from '@/components/game/PalavraDisplay'
 import { StatusPanel } from '@/components/game/StatusPanel'
 import { Teclado } from '@/components/game/Teclado'
+import { SomToggle } from '@/components/ui/SomToggle'
 import { useGame } from '@/hooks/useGame'
 import { useKeyboard } from '@/hooks/useKeyboard'
+import { useSom } from '@/hooks/useSom'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 
 interface GamePageProps {
@@ -14,6 +16,7 @@ interface GamePageProps {
 }
 
 export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
+  const { somAtivo, alternarSom, reproduzir } = useSom()
   const {
     palavraAtual,
     letrasUsadas,
@@ -26,7 +29,14 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
     melhorPontuacao,
     usarLetra,
     reiniciar,
-  } = useGame({ categoria, dificuldade })
+  } = useGame({
+    categoria,
+    dificuldade,
+    aoAcertarLetra: () => reproduzir('acerto'),
+    aoErrarLetra: () => reproduzir('erro'),
+    aoVencer: () => reproduzir('vitoria'),
+    aoPerder: () => reproduzir('derrota'),
+  })
 
   useKeyboard(usarLetra, estado === 'jogando')
 
@@ -35,18 +45,27 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
       <header className="flex w-full max-w-2xl items-center justify-between">
         <button
           type="button"
-          onClick={onVoltar}
+          onClick={() => {
+            reproduzir('clique')
+            onVoltar()
+          }}
           className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-slate-500"
         >
           ← Início
         </button>
-        <button
-          type="button"
-          onClick={reiniciar}
-          className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-slate-500"
-        >
-          Reiniciar
-        </button>
+        <div className="flex items-center gap-2">
+          <SomToggle ativo={somAtivo} onToggle={alternarSom} />
+          <button
+            type="button"
+            onClick={() => {
+              reproduzir('clique')
+              reiniciar()
+            }}
+            className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-slate-500"
+          >
+            Reiniciar
+          </button>
+        </div>
       </header>
 
       <InfoBar categoria={palavraAtual.categoria} dica={palavraAtual.dica} />
