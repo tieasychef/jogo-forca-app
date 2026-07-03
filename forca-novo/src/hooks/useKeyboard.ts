@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-const LETRA_VALIDA = /^[A-ZÀ-Ú]$/
+const LETRA_VALIDA = /^[A-Z]$/
 
 export function useKeyboard(aoDigitarLetra: (letra: string) => void, ativo: boolean) {
   useEffect(() => {

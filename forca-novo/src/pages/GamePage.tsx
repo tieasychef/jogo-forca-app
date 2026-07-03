@@ -2,6 +2,7 @@ import { ForcaSvg } from '@/components/game/ForcaSvg'
 import { InfoBar } from '@/components/game/InfoBar'
 import { PalavraDisplay } from '@/components/game/PalavraDisplay'
 import { StatusPanel } from '@/components/game/StatusPanel'
+import { Teclado } from '@/components/game/Teclado'
 import { useGame } from '@/hooks/useGame'
 import { useKeyboard } from '@/hooks/useKeyboard'
 import type { Categoria, Dificuldade } from '@/types/palavra'
@@ -15,6 +16,7 @@ interface GamePageProps {
 export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
   const {
     palavraAtual,
+    letrasUsadas,
     letrasCorretas,
     letrasErradas,
     erros,
@@ -51,6 +53,13 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
       <PalavraDisplay palavra={palavraAtual.palavra} letrasCorretas={letrasCorretas} />
 
       <StatusPanel letrasErradas={letrasErradas} erros={erros} pontuacao={0} />
+
+      <Teclado
+        letrasUsadas={letrasUsadas}
+        letrasCorretas={letrasCorretas}
+        onSelecionar={usarLetra}
+        desabilitado={estado !== 'jogando'}
+      />
 
       {estado === 'perdeu' && (
         <p className="text-lg font-bold text-red-400">
