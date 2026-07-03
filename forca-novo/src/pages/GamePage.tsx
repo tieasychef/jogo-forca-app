@@ -1,6 +1,8 @@
+import { AnimatePresence } from 'framer-motion'
 import { ForcaSvg } from '@/components/game/ForcaSvg'
 import { InfoBar } from '@/components/game/InfoBar'
 import { PalavraDisplay } from '@/components/game/PalavraDisplay'
+import { ResultModal } from '@/components/game/ResultModal'
 import { StatusPanel } from '@/components/game/StatusPanel'
 import { Teclado } from '@/components/game/Teclado'
 import { SomToggle } from '@/components/ui/SomToggle'
@@ -89,14 +91,17 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
         desabilitado={estado !== 'jogando'}
       />
 
-      {estado === 'perdeu' && (
-        <p className="text-lg font-bold text-red-400">
-          Fim de jogo! A palavra era {palavraAtual.palavra}
-        </p>
-      )}
-      {estado === 'venceu' && (
-        <p className="text-lg font-bold text-emerald-400">Você venceu! 🎉</p>
-      )}
+      <AnimatePresence>
+        {(estado === 'venceu' || estado === 'perdeu') && (
+          <ResultModal
+            estado={estado}
+            palavra={palavraAtual.palavra}
+            pontuacao={pontuacao}
+            onVoltar={onVoltar}
+            onReiniciar={reiniciar}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
