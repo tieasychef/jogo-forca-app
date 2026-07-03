@@ -21,6 +21,9 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
     letrasErradas,
     erros,
     estado,
+    pontuacao,
+    combo,
+    melhorPontuacao,
     usarLetra,
     reiniciar,
   } = useGame({ categoria, dificuldade })
@@ -52,7 +55,13 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
 
       <PalavraDisplay palavra={palavraAtual.palavra} letrasCorretas={letrasCorretas} />
 
-      <StatusPanel letrasErradas={letrasErradas} erros={erros} pontuacao={0} />
+      <StatusPanel
+        letrasErradas={letrasErradas}
+        erros={erros}
+        pontuacao={pontuacao}
+        combo={combo}
+        melhorPontuacao={melhorPontuacao}
+      />
 
       <Teclado
         letrasUsadas={letrasUsadas}
