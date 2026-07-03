@@ -12,6 +12,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--workspace", "backend"],
       "port": 3333
+    },
+    {
+      "name": "forca-novo",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "forca-novo", "run", "dev"],
+      "port": 5174
     }
   ]
 }
