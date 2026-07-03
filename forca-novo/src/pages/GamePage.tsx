@@ -10,6 +10,7 @@ import { SomToggle } from '@/components/ui/SomToggle'
 import { useEstatisticas } from '@/hooks/useEstatisticas'
 import { useGame } from '@/hooks/useGame'
 import { useKeyboard } from '@/hooks/useKeyboard'
+import { useRanking } from '@/hooks/useRanking'
 import { useSom } from '@/hooks/useSom'
 import type { Categoria, Dificuldade } from '@/types/palavra'
 
@@ -22,6 +23,7 @@ interface GamePageProps {
 export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
   const { somAtivo, alternarSom, reproduzir } = useSom()
   const { estatisticas, registrarPartida } = useEstatisticas()
+  const { entraNoRanking, adicionarEntrada } = useRanking()
   const {
     palavraAtual,
     letrasUsadas,
@@ -106,8 +108,18 @@ export function GamePage({ categoria, dificuldade, onVoltar }: GamePageProps) {
             estado={estado}
             palavra={palavraAtual.palavra}
             pontuacao={pontuacao}
+            elegivelParaRanking={entraNoRanking(pontuacao)}
             onVoltar={onVoltar}
             onReiniciar={reiniciar}
+            onSalvarNoRanking={(nome) =>
+              adicionarEntrada({
+                nome,
+                pontuacao,
+                categoria: palavraAtual.categoria,
+                dificuldade,
+                data: new Date().toISOString(),
+              })
+            }
           />
         )}
       </AnimatePresence>

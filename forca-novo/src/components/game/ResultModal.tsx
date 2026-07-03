@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import type { EstadoJogo } from '@/types/jogo'
@@ -7,18 +7,24 @@ interface ResultModalProps {
   estado: Extract<EstadoJogo, 'venceu' | 'perdeu'>
   palavra: string
   pontuacao: number
+  elegivelParaRanking: boolean
   onReiniciar: () => void
   onVoltar: () => void
+  onSalvarNoRanking: (nome: string) => void
 }
 
 export function ResultModal({
   estado,
   palavra,
   pontuacao,
+  elegivelParaRanking,
   onReiniciar,
   onVoltar,
+  onSalvarNoRanking,
 }: ResultModalProps) {
   const venceu = estado === 'venceu'
+  const [nome, setNome] = useState('')
+  const [salvo, setSalvo] = useState(false)
 
   useEffect(() => {
     if (!venceu) return
@@ -29,6 +35,12 @@ export function ResultModal({
       colors: ['#e879f9', '#a78bfa', '#22d3ee', '#34d399'],
     })
   }, [venceu])
+
+  function salvarPontuacao() {
+    const nomeFinal = nome.trim() || 'Jogador'
+    onSalvarNoRanking(nomeFinal)
+    setSalvo(true)
+  }
 
   return (
     <motion.div
@@ -54,6 +66,34 @@ export function ResultModal({
         <p className="text-lg font-semibold text-slate-100">
           Pontuação final: <span className="text-fuchsia-400">{pontuacao}</span>
         </p>
+
+        {elegivelParaRanking && !salvo && (
+          <div className="flex w-full flex-col gap-2">
+            <p className="text-sm font-semibold text-amber-300">
+              Sua pontuação entrou no Top 10! 🏆
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={nome}
+                onChange={(evento) => setNome(evento.target.value)}
+                maxLength={20}
+                placeholder="Seu nome"
+                className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 outline-none focus:border-fuchsia-400"
+              />
+              <button
+                type="button"
+                onClick={salvarPontuacao}
+                className="shrink-0 rounded-lg bg-amber-400 px-3 py-2 text-sm font-bold text-slate-900"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        )}
+        {elegivelParaRanking && salvo && (
+          <p className="text-sm text-emerald-400">Pontuação salva no ranking!</p>
+        )}
 
         <div className="mt-2 flex gap-3">
           <button

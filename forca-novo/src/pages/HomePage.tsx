@@ -5,7 +5,9 @@ import { SelectableCard } from '@/components/home/SelectableCard'
 import { PlayButton } from '@/components/home/PlayButton'
 import { SomToggle } from '@/components/ui/SomToggle'
 import { EstatisticasModal } from '@/components/stats/EstatisticasModal'
+import { RankingModal } from '@/components/ranking/RankingModal'
 import { useEstatisticas } from '@/hooks/useEstatisticas'
+import { useRanking } from '@/hooks/useRanking'
 import { useSom } from '@/hooks/useSom'
 import { OPCOES_DIFICULDADE } from '@/types/dificuldade'
 import type { Categoria, Dificuldade } from '@/types/palavra'
@@ -34,8 +36,10 @@ export function HomePage({ onIniciar }: HomePageProps) {
   const [categoria, setCategoria] = useState<Categoria>(CATEGORIAS[0])
   const [dificuldade, setDificuldade] = useState<Dificuldade>('facil')
   const [mostrarEstatisticas, setMostrarEstatisticas] = useState(false)
+  const [mostrarRanking, setMostrarRanking] = useState(false)
   const { somAtivo, alternarSom, reproduzir } = useSom()
   const { estatisticas, taxaVitoria } = useEstatisticas()
+  const { ranking } = useRanking()
 
   function selecionarCategoria(cat: Categoria) {
     reproduzir('clique')
@@ -61,6 +65,17 @@ export function HomePage({ onIniciar }: HomePageProps) {
         >
           📊
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            reproduzir('clique')
+            setMostrarRanking(true)
+          }}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 text-lg text-slate-300 transition-colors hover:border-slate-500"
+          aria-label="Ver ranking"
+        >
+          🏆
+        </button>
         <SomToggle ativo={somAtivo} onToggle={alternarSom} />
       </div>
 
@@ -71,6 +86,9 @@ export function HomePage({ onIniciar }: HomePageProps) {
             taxaVitoria={taxaVitoria}
             onFechar={() => setMostrarEstatisticas(false)}
           />
+        )}
+        {mostrarRanking && (
+          <RankingModal ranking={ranking} onFechar={() => setMostrarRanking(false)} />
         )}
       </AnimatePresence>
 
